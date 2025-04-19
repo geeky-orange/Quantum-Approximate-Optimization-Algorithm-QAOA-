@@ -16,43 +16,43 @@ This project implements a quantum approximate optimization algorithm (QAOA) for 
 
 The Markowitz portfolio optimization problem can be formulated as follows:
 
-Minimize the risk: 
-$$ \text{Risk} = \sum_{i=1}^{n} \sum_{j=1}^{n} x_i Q_{ij} x_j $$
+Minimize the risk:  
+<img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\text{Risk}&space;=&space;\sum_{i=1}^{n}&space;\sum_{j=1}^{n}&space;x_i&space;Q_{ij}&space;x_j" alt="Risk = \sum_{i=1}^{n} \sum_{j=1}^{n} x_i Q_{ij} x_j">
 
-Subject to the budget constraint:
-$$ \sum_{i=1}^{n} x_i = k $$
+Subject to the budget constraint:  
+<img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\sum_{i=1}^{n}&space;x_i&space;=&space;k" alt="\sum_{i=1}^{n} x_i = k">
 
 Where:
-- $x_i \in \{0, 1\}$ is a binary variable indicating whether asset $i$ is selected (1) or not (0)
-- $Q_{ij}$ represents the covariance between assets $i$ and $j$ (risk matrix)
-- $k$ is the number of assets to select (in our case, $k=2$)
+- <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;x_i&space;\in&space;\{0,&space;1\}" alt="x_i \in \{0, 1\}"> is a binary variable indicating whether asset <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;i" alt="i"> is selected (1) or not (0)
+- <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;Q_{ij}" alt="Q_{ij}"> represents the covariance between assets <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;i" alt="i"> and <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;j" alt="j"> (risk matrix)
+- <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;k" alt="k"> is the number of assets to select (in our case, <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;k=2" alt="k=2">)
 
-In our implementation, we convert this to an unconstrained problem by adding a penalty term:
-$$ \text{Cost} = \sum_{i=1}^{n} \sum_{j=1}^{n} x_i Q_{ij} x_j + \lambda \left( \sum_{i=1}^{n} x_i - k \right)^2 $$
+In our implementation, we convert this to an unconstrained problem by adding a penalty term:  
+<img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\text{Cost}&space;=&space;\sum_{i=1}^{n}&space;\sum_{j=1}^{n}&space;x_i&space;Q_{ij}&space;x_j&space;+&space;\lambda&space;\left(&space;\sum_{i=1}^{n}&space;x_i&space;-&space;k&space;\right)^2" alt="Cost = \sum_{i=1}^{n} \sum_{j=1}^{n} x_i Q_{ij} x_j + \lambda \left( \sum_{i=1}^{n} x_i - k \right)^2">
 
-Where $\lambda$ is a penalty parameter (set to 10 in our implementation).
+Where <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\lambda" alt="\lambda"> is a penalty parameter (set to 10 in our implementation).
 
 ### QAOA Algorithm
 
 The QAOA algorithm works as follows:
 
-1. We map our optimization problem to a cost Hamiltonian $H_C$ where:
-   $$ H_C|\mathbf{x}\rangle = \text{Cost}(\mathbf{x})|\mathbf{x}\rangle $$
+1. We map our optimization problem to a cost Hamiltonian <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;H_C" alt="H_C"> where:  
+   <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;H_C|\mathbf{x}\rangle&space;=&space;\text{Cost}(\mathbf{x})|\mathbf{x}\rangle" alt="H_C|\mathbf{x}\rangle = \text{Cost}(\mathbf{x})|\mathbf{x}\rangle">
 
-2. We use a mixing Hamiltonian $H_M$ that explores the solution space:
-   $$ H_M = \sum_{i=1}^{n} X_i $$
-   where $X_i$ is the Pauli-X operator applied to qubit $i$.
+2. We use a mixing Hamiltonian <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;H_M" alt="H_M"> that explores the solution space:  
+   <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;H_M&space;=&space;\sum_{i=1}^{n}&space;X_i" alt="H_M = \sum_{i=1}^{n} X_i">  
+   where <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;X_i" alt="X_i"> is the Pauli-X operator applied to qubit <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;i" alt="i">.
 
-3. We prepare an initial state $|\psi_0\rangle$ as the equal superposition of all basis states:
-   $$ |\psi_0\rangle = \frac{1}{\sqrt{2^n}} \sum_{\mathbf{x}} |\mathbf{x}\rangle $$
+3. We prepare an initial state <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;|\psi_0\rangle" alt="|\psi_0\rangle"> as the equal superposition of all basis states:  
+   <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;|\psi_0\rangle&space;=&space;\frac{1}{\sqrt{2^n}}&space;\sum_{\mathbf{x}}&space;|\mathbf{x}\rangle" alt="|\psi_0\rangle = \frac{1}{\sqrt{2^n}} \sum_{\mathbf{x}} |\mathbf{x}\rangle">
 
-4. Apply the QAOA circuit with parameters $\gamma$ and $\beta$:
-   $$ |\psi(\gamma, \beta)\rangle = e^{-i\beta H_M} e^{-i\gamma H_C} |\psi_0\rangle $$
+4. Apply the QAOA circuit with parameters <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\gamma" alt="\gamma"> and <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\beta" alt="\beta">:  
+   <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;|\psi(\gamma,&space;\beta)\rangle&space;=&space;e^{-i\beta&space;H_M}&space;e^{-i\gamma&space;H_C}&space;|\psi_0\rangle" alt="|\psi(\gamma, \beta)\rangle = e^{-i\beta H_M} e^{-i\gamma H_C} |\psi_0\rangle">
 
-5. Compute the expectation value of the cost:
-   $$ E(\gamma, \beta) = \langle\psi(\gamma, \beta)| H_C |\psi(\gamma, \beta)\rangle $$
+5. Compute the expectation value of the cost:  
+   <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;E(\gamma,&space;\beta)&space;=&space;\langle\psi(\gamma,&space;\beta)|&space;H_C&space;|\psi(\gamma,&space;\beta)\rangle" alt="E(\gamma, \beta) = \langle\psi(\gamma, \beta)| H_C |\psi(\gamma, \beta)\rangle">
 
-6. Optimize the parameters $\gamma$ and $\beta$ to minimize $E(\gamma, \beta)$.
+6. Optimize the parameters <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\gamma" alt="\gamma"> and <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\beta" alt="\beta"> to minimize <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;E(\gamma,&space;\beta)" alt="E(\gamma, \beta)">.
 
 7. Measure the resulting state in the computational basis. The most probable outcome corresponds to the approximate solution.
 
@@ -103,11 +103,11 @@ Our implementation directly simulates the quantum state evolution:
 
 1. **Cost Hamiltonian Construction**: We map our portfolio optimization problem to a diagonal matrix where each entry corresponds to the cost of a particular asset selection.
 
-2. **Mixing Hamiltonian Construction**: We implement the tensor product structure of $H_M$ using NumPy's kron function.
+2. **Mixing Hamiltonian Construction**: We implement the tensor product structure of <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;H_M" alt="H_M"> using NumPy's kron function.
 
-3. **Unitary Evolution**: We compute the matrix exponentials $U_C = e^{-i\gamma H_C}$ and $U_M = e^{-i\beta H_M}$ using SciPy's expm function.
+3. **Unitary Evolution**: We compute the matrix exponentials <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;U_C&space;=&space;e^{-i\gamma&space;H_C}" alt="U_C = e^{-i\gamma H_C}"> and <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;U_M&space;=&space;e^{-i\beta&space;H_M}" alt="U_M = e^{-i\beta H_M}"> using SciPy's expm function.
 
-4. **Parameter Optimization**: We perform a grid search over $\gamma \in [0, 2\pi]$ and $\beta \in [0, \pi]$ to find the optimal parameters.
+4. **Parameter Optimization**: We perform a grid search over <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\gamma&space;\in&space;[0,&space;2\pi]" alt="\gamma \in [0, 2\pi]"> and <img src="https://latex.codecogs.com/png.latex?\dpi{110}&space;\bg_white&space;\beta&space;\in&space;[0,&space;\pi]" alt="\beta \in [0, \pi]"> to find the optimal parameters.
 
 5. **State Measurement**: We compute the probability distribution of the final quantum state and identify the most probable solution.
 
