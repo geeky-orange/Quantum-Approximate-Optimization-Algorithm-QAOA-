@@ -2,7 +2,7 @@
 
 This project implements a quantum approximate optimization algorithm (QAOA) for portfolio optimization, using NumPy and SciPy to simulate the quantum behavior.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 ## Overview
 
@@ -158,9 +158,7 @@ Here are some ways you could extend the project:
 - [Farhi, E., Goldstone, J., & Gutmann, S. (2014). A Quantum Approximate Optimization Algorithm](https://arxiv.org/abs/1411.4028)
 - [Guerreschi, G. G., & Matsuura, A. Y. (2019). QAOA for Max-Cut Problems](https://arxiv.org/abs/1901.08059)
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Notes
 
