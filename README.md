@@ -1,8 +1,8 @@
-# Quantum Approximate Optimization for Portfolio Balancing
+# Quantum Approximate Optimization Algorithm (QAOA) for Portfolio Optimization
 
 This project implements a quantum approximate optimization algorithm (QAOA) for portfolio optimization, using NumPy and SciPy to simulate the quantum behavior.
 
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
@@ -10,21 +10,65 @@ This project implements a quantum approximate optimization algorithm (QAOA) for 
 - **Approach:** We model the problem as a quadratic objective function with a penalty term for constraint violations. QAOA is then used to find an optimal (or near-optimal) solution.
 - **Tools:** This project uses NumPy and SciPy to simulate the quantum behavior of QAOA from scratch, without relying on quantum computing libraries.
 
+## Mathematical Formulation
+
+### Portfolio Optimization Problem
+
+The Markowitz portfolio optimization problem can be formulated as follows:
+
+Minimize the risk: 
+$$ \text{Risk} = \sum_{i=1}^{n} \sum_{j=1}^{n} x_i Q_{ij} x_j $$
+
+Subject to the budget constraint:
+$$ \sum_{i=1}^{n} x_i = k $$
+
+Where:
+- $x_i \in \{0, 1\}$ is a binary variable indicating whether asset $i$ is selected (1) or not (0)
+- $Q_{ij}$ represents the covariance between assets $i$ and $j$ (risk matrix)
+- $k$ is the number of assets to select (in our case, $k=2$)
+
+In our implementation, we convert this to an unconstrained problem by adding a penalty term:
+$$ \text{Cost} = \sum_{i=1}^{n} \sum_{j=1}^{n} x_i Q_{ij} x_j + \lambda \left( \sum_{i=1}^{n} x_i - k \right)^2 $$
+
+Where $\lambda$ is a penalty parameter (set to 10 in our implementation).
+
+### QAOA Algorithm
+
+The QAOA algorithm works as follows:
+
+1. We map our optimization problem to a cost Hamiltonian $H_C$ where:
+   $$ H_C|\mathbf{x}\rangle = \text{Cost}(\mathbf{x})|\mathbf{x}\rangle $$
+
+2. We use a mixing Hamiltonian $H_M$ that explores the solution space:
+   $$ H_M = \sum_{i=1}^{n} X_i $$
+   where $X_i$ is the Pauli-X operator applied to qubit $i$.
+
+3. We prepare an initial state $|\psi_0\rangle$ as the equal superposition of all basis states:
+   $$ |\psi_0\rangle = \frac{1}{\sqrt{2^n}} \sum_{\mathbf{x}} |\mathbf{x}\rangle $$
+
+4. Apply the QAOA circuit with parameters $\gamma$ and $\beta$:
+   $$ |\psi(\gamma, \beta)\rangle = e^{-i\beta H_M} e^{-i\gamma H_C} |\psi_0\rangle $$
+
+5. Compute the expectation value of the cost:
+   $$ E(\gamma, \beta) = \langle\psi(\gamma, \beta)| H_C |\psi(\gamma, \beta)\rangle $$
+
+6. Optimize the parameters $\gamma$ and $\beta$ to minimize $E(\gamma, \beta)$.
+
+7. Measure the resulting state in the computational basis. The most probable outcome corresponds to the approximate solution.
+
 ## Files
 
 - `README.md`: This file.
 - `requirements.txt`: Contains the Python dependencies.
-- `main.py`: An implementation of QAOA from scratch using NumPy and SciPy, without relying on quantum computing libraries.
-- `.gitignore`: Specifies intentionally untracked files to ignore.
-
+- `main.py`: An implementation of QAOA from scratch using NumPy and SciPy.
 
 ## Installation
 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/quantum-portfolio-optimization.git
-cd quantum-portfolio-optimization
+git clone https://github.com/geeky-orange/Quantum-Approximate-Optimization-Algorithm-QAOA-.git
+cd Quantum-Approximate-Optimization-Algorithm-QAOA-
 ```
 
 ### Create a Virtual Environment and Install Dependencies
@@ -53,17 +97,19 @@ python main.py
 
 This will output the optimal asset selection and risk value for the portfolio optimization problem.
 
-## QAOA Implementation
+## QAOA Implementation Details
 
-The `main.py` file provides a pure NumPy/SciPy implementation of QAOA for portfolio optimization. It:
+Our implementation directly simulates the quantum state evolution:
 
-1. Constructs the cost Hamiltonian by mapping the portfolio optimization problem to a diagonal matrix
-2. Constructs the mixing Hamiltonian using Pauli-X operators
-3. Simulates the QAOA quantum circuit by applying the cost and mixing unitaries
-4. Performs a grid search over gamma and beta parameters to find the optimal solution
-5. Reports the optimal solution, showing which assets should be selected to minimize risk
+1. **Cost Hamiltonian Construction**: We map our portfolio optimization problem to a diagonal matrix where each entry corresponds to the cost of a particular asset selection.
 
-This implementation is useful for educational purposes to understand how QAOA works without requiring a quantum computing library.
+2. **Mixing Hamiltonian Construction**: We implement the tensor product structure of $H_M$ using NumPy's kron function.
+
+3. **Unitary Evolution**: We compute the matrix exponentials $U_C = e^{-i\gamma H_C}$ and $U_M = e^{-i\beta H_M}$ using SciPy's expm function.
+
+4. **Parameter Optimization**: We perform a grid search over $\gamma \in [0, 2\pi]$ and $\beta \in [0, \pi]$ to find the optimal parameters.
+
+5. **State Measurement**: We compute the probability distribution of the final quantum state and identify the most probable solution.
 
 ## Results Discussion
 
@@ -109,6 +155,12 @@ Here are some ways you could extend the project:
 ## References
 
 - [Best practices for portfolio optimization by quantum computing, experimented on real quantum devices](https://doi.org/10.1038/s41598-023-45392-w)
+- [Farhi, E., Goldstone, J., & Gutmann, S. (2014). A Quantum Approximate Optimization Algorithm](https://arxiv.org/abs/1411.4028)
+- [Guerreschi, G. G., & Matsuura, A. Y. (2019). QAOA for Max-Cut Problems](https://arxiv.org/abs/1901.08059)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Notes
 
